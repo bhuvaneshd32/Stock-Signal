@@ -6,6 +6,9 @@ import uvicorn
 import os
 import logging
 import google.generativeai as genai
+from dotenv import load_dotenv # ADD THIS
+
+load_dotenv()
 
 from src.retriever.search_engine import HybridRetriever
 from src.ingestion.bse_scraper import BSEScraper
@@ -18,7 +21,7 @@ logger = logging.getLogger(__name__)
 api_key = os.environ.get("GEMINI_API_KEY")
 if api_key:
     genai.configure(api_key=api_key)
-    llm_model = genai.GenerativeModel('gemini-1.5-flash')
+    llm_model = genai.GenerativeModel('gemini-flash-latest')
 else:
     logger.warning("GEMINI_API_KEY not found. AI Summaries will be disabled.")
     llm_model = None

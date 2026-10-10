@@ -1,11 +1,12 @@
 "use client";
 
 import { useState } from "react";
-import { Search, ExternalLink, FileText, Calendar, RefreshCw } from "lucide-react";
+import { Search, ExternalLink, FileText, Calendar, RefreshCw, Sparkles } from "lucide-react";
 
 export default function Home() {
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<any[]>([]);
+  const [summary, setSummary] = useState<string | null>(null); // ADD THIS
   const [loading, setLoading] = useState(false);
   const [searched, setSearched] = useState(false);
   const [updating, setUpdating] = useState(false);
@@ -22,6 +23,7 @@ export default function Home() {
       const response = await fetch(`http://localhost:8000/search?q=${encodeURIComponent(query)}&top_k=5`);
       const data = await response.json();
       setResults(data.results || []);
+      setSummary(data.summary || null); // ADD THIS
     } catch (error) {
       console.error("Failed to fetch results:", error);
     } finally {
@@ -93,7 +95,19 @@ export default function Home() {
           {!loading && searched && results.length === 0 && (
             <p className="text-center text-slate-500">No evidence found for this query.</p>
           )}
+          
+          {/* AI Summary Block */}
+          {!loading && summary && (
+            <div className="bg-gradient-to-r from-blue-50 to-indigo-50 p-6 rounded-xl border border-blue-100 shadow-sm">
+              <div className="flex items-center space-x-2 text-blue-800 font-semibold mb-3">
+                <Sparkles size={18} />
+                <h2>AI Executive Summary</h2>
+              </div>
+              <p className="text-gray-700 leading-relaxed text-sm whitespace-pre-wrap">{summary}</p>
+            </div>
+          )}
 
+          {/* Raw Citation Cards */}
           {!loading && results.map((result, idx) => (
             <div key={idx} className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition">
               <div className="flex justify-between items-start mb-4">
